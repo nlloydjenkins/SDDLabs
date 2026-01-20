@@ -1,0 +1,23 @@
+{
+  "name": "sddlabs",
+  "version": "1.0.0",
+  "description": "Full-stack React TypeScript application with Express API backend",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "reset": "powershell -ExecutionPolicy Bypass -File ./scripts/reset-app.ps1",
+    "reset:clean": "powershell -ExecutionPolicy Bypass -File ./scripts/reset-app.ps1 -IncludeLockFiles",
+    "reset:features": "powershell -ExecutionPolicy Bypass -File ./scripts/reset-app.ps1 -RemoveFeatures",
+    "reset:all": "powershell -ExecutionPolicy Bypass -File ./scripts/reset-app.ps1 -RemoveFeatures -IncludeLockFiles",
+    "test": "cd client && npm test",
+    "test:run": "cd client && npm test -- --run"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
