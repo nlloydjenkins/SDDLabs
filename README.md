@@ -1,19 +1,10 @@
-# SDDLabs — Spec-Driven Development Laboratory
+# Spec-Driven Development Labs
 
 ## What This Lab Proves
 
 This laboratory demonstrates **Spec-Driven Development (SDD)** — a methodology where AI coding assistants generate production-quality code from detailed specification documents.
 
-### The Hypothesis
-
 > Given well-structured requirements, style guides, and evaluation criteria, an AI assistant can generate code that meets professional standards for functionality, security, accessibility, and maintainability.
-
-### What You'll Learn
-
-1. **How to write effective specifications** that AI can interpret and implement
-2. **How to evaluate AI-generated code** against measurable quality criteria
-3. **How specifications affect output quality** by comparing different approaches
-4. **The role of human oversight** in AI-assisted development
 
 ---
 
@@ -105,12 +96,7 @@ Run the application:
 npm run dev
 ```
 
-Navigate to `http://localhost:3000/calculator` and manually verify:
-
-- [ ] All buttons present and functional
-- [ ] Arithmetic operations work correctly
-- [ ] Keyboard input supported
-- [ ] Division by zero handled
+Navigate to `http://localhost:3000/calculator`:
 
 Run the tests:
 
