@@ -1,20 +1,22 @@
 # Project Instructions
 
-This is a full-stack React TypeScript application with an Express API backend.
-
-## Project Structure
-
+This repository contains multiple lab projects for Spec-Driven Development:
 - `/client` - React TypeScript frontend
 - `/server` - Express TypeScript API backend
+- `/java-server` - Spring Boot REST API backend
 
-## Development Guidelines
+---
+
+## TypeScript/React Guidelines
+
+### Development Guidelines
 
 - Use TypeScript for all code
 - Follow React best practices with functional components and hooks
 - API routes should follow RESTful conventions
 - Use proper error handling in both frontend and backend
 
-## Running the Project
+### Running the Project
 
 - Frontend: `cd client && npm run dev`
 - Backend: `cd server && npm run dev`
@@ -111,3 +113,112 @@ Follow these testing approaches:
 | **Liskov Substitution**   | Consistent prop interfaces            |
 | **Interface Segregation** | Small, focused prop types             |
 | **Dependency Inversion**  | Inject dependencies via props/context |
+
+---
+
+## Java/Spring Boot Guidelines
+
+When working in the `/java-server` directory, follow these guidelines.
+
+### Project Structure
+
+```
+java-server/
+├── src/main/java/com/sddlabs/<feature>/
+│   ├── controller/      # REST controllers
+│   ├── service/         # Business logic
+│   ├── model/           # DTOs and entities
+│   └── exception/       # Custom exceptions
+├── src/test/java/
+└── pom.xml
+```
+
+### Running the Project
+
+```bash
+cd java-server
+./mvnw spring-boot:run
+```
+
+### Development Guidelines
+
+- Use Java 17+ features (records, sealed classes)
+- Follow the Java Style Guide in `docs/javastyle/style-guide.md`
+- Use constructor injection for dependencies (not field injection)
+- Return `ResponseEntity<>` for explicit HTTP status codes
+
+### Code Organisation
+
+1. **Controller Layer** - HTTP handling only, no business logic
+2. **Service Layer** - Business logic, validation, calculations
+3. **Model Layer** - DTOs using Java records for immutability
+
+### DTOs (Data Transfer Objects)
+
+Use Java records for request/response objects:
+
+```java
+public record CalculationRequest(
+    @NotNull Double firstOperand,
+    @NotNull Double secondOperand,
+    @NotBlank String operator
+) {}
+
+public record CalculationResult(
+    double result,
+    String expression,
+    boolean hasError,
+    String errorMessage
+) {}
+```
+
+### Exception Handling
+
+Use `@RestControllerAdvice` for global exception handling:
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(ArithmeticException.class)
+    public ResponseEntity<ErrorResponse> handleArithmeticException(ArithmeticException ex) {
+        return ResponseEntity.badRequest()
+            .body(new ErrorResponse("CALCULATION_ERROR", ex.getMessage()));
+    }
+}
+```
+
+### Testing Strategy
+
+| Test Type | Framework | Purpose |
+|-----------|-----------|---------|
+| Unit Tests | JUnit 5 + Mockito | Service layer logic |
+| Integration Tests | @SpringBootTest | Full request/response |
+| Controller Tests | @WebMvcTest | HTTP layer only |
+
+### Test Structure (Arrange-Act-Assert)
+
+```java
+@Test
+void calculate_addition_returnsCorrectSum() {
+    // Arrange
+    var request = new CalculationRequest(5.0, 3.0, "+");
+    
+    // Act
+    var result = calculatorService.calculate(request);
+    
+    // Assert
+    assertThat(result.result()).isEqualTo(8.0);
+    assertThat(result.hasError()).isFalse();
+}
+```
+
+### SOLID Principles for Spring Boot
+
+| Principle | Application |
+|-----------|-------------|
+| **Single Responsibility** | One service = one domain |
+| **Open/Closed** | Extend via interfaces, not modification |
+| **Liskov Substitution** | Consistent interface implementations |
+| **Interface Segregation** | Small, focused interfaces |
+| **Dependency Inversion** | Inject interfaces, not implementations |

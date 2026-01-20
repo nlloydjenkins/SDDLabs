@@ -1,40 +1,34 @@
 # Spec-Driven Development Labs
 
-## What This Lab Proves
-
-This laboratory demonstrates **Spec-Driven Development (SDD)** — a methodology where AI coding assistants generate production-quality code from detailed specification documents.
-
-> Given well-structured requirements, style guides, and evaluation criteria, an AI assistant can generate code that meets professional standards for functionality, security, accessibility, and maintainability.
+Generate features from specifications using AI coding assistants.
 
 ---
 
-## Lab Structure
+## Prerequisites
 
-```
-docs/
-├── calcreqs/reqs.md          # Feature specification (the input)
-├── tsstyle/                   # TypeScript style guide (coding standards)
-└── unit-testing.md           # Testing strategy
-
-.github/
-└── copilot-instructions.md   # Project guidelines for AI
-
-client/src/                    # Generated code (the output)
-scripts/
-└── reset-app.ps1             # Reset tool to repeat experiments
-```
-
----
-
-## Running the Lab
-
-### Prerequisites
-
-- Node.js 18+
-- VS Code with GitHub Copilot
+### Required
+- Node.js 18+ (for TypeScript lab)
+- Java 17+ (for Java lab)
 - Git
+- GitHub Copilot subscription
 
-### Setup
+### VS Code Extensions
+
+Install these extensions for full support:
+
+```
+GitHub.copilot
+vscjava.vscode-java-pack
+vmware.vscode-boot-dev-pack
+```
+
+### Alternative: IntelliJ IDEA
+- Install [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+- Install plugin: GitHub Copilot (Settings → Plugins)
+
+---
+
+## Setup
 
 ```bash
 git clone https://github.com/nlloydjenkins/SDDLabs.git
@@ -44,174 +38,150 @@ npm run install:all
 
 ---
 
-## Lab Exercise: Generate a Feature from Specification
+## TypeScript Lab: Calculator UI
 
-### Step 1: Reset to Clean State
-
-Remove any previously generated code to start fresh:
+### 1. Reset
 
 ```bash
 npm run reset:features
 ```
 
-This removes generated feature code while preserving all specifications.
+### 2. Generate
 
-### Step 2: Review the Specification
-
-Open and read the calculator requirements:
-
-```
-docs/calcreqs/reqs.md
-```
-
-Note how the specification covers:
-
-- Functional requirements (what it does)
-- Design requirements (how it looks)
-- Accessibility requirements (who can use it)
-- Security requirements (what it prevents)
-- Performance requirements (how fast it responds)
-
-### Step 3: Generate the Feature
-
-Ask Copilot to create the feature:
+Open Copilot Chat and enter:
 
 ```
 Create the calculator feature based on the requirements in docs/calcreqs/reqs.md.
 Follow the project guidelines in .github/copilot-instructions.md.
 ```
 
-Observe how Copilot:
-
-- Interprets the specification
-- Structures the code according to guidelines
-- Implements accessibility features
-- Creates tests
-
-### Step 4: Verify the Output
-
-Run the application:
+### 3. Run
 
 ```bash
 npm run dev
 ```
 
-Navigate to `http://localhost:3000/calculator`:
+Open: http://localhost:3000/calculator
 
-Run the tests:
+### 4. Test
 
 ```bash
 npm test
 ```
 
----
+### 5. Evaluate
 
-## Evaluating the Output
-
-### Automated Evaluation
-
-Ask Copilot to assess the generated code:
+In Copilot Chat:
 
 ```
 Assess the calculator page for best practices, adherence to our guidelines
-for style, testing and requirements. Give a Mark in the form A, B, C, etc.
+for style, testing and requirements. Give a grade (A, B, C, D, F).
 
-Include sections for security, accessibility, maintainability and other
-well-written code and solution benchmarks.
+Include sections for security, accessibility, maintainability.
 ```
-
-### Evaluation Criteria
-
-| Category               | What's Assessed                             |
-| ---------------------- | ------------------------------------------- |
-| **Requirements**       | Does it do what the spec says?              |
-| **Style & Guidelines** | Does it follow the coding standards?        |
-| **Testing**            | Are there sufficient tests?                 |
-| **Security**           | Is input validated? No XSS risks?           |
-| **Accessibility**      | WCAG 2.1 AA compliant? Keyboard accessible? |
-| **Maintainability**    | Separation of concerns? Easy to extend?     |
-| **Performance**        | No unnecessary re-renders?                  |
-
-### Grade Scale
-
-| Grade | Meaning                                        |
-| ----- | ---------------------------------------------- |
-| **A** | Production-ready, meets all criteria           |
-| **B** | Good, minor improvements needed                |
-| **C** | Acceptable, notable issues to address          |
-| **D** | Below standard, significant refactoring needed |
-| **F** | Does not meet requirements                     |
-
-### Recording Results
-
-After each lab run, note:
-
-1. The grade received for each category
-2. Specific issues identified
-3. What prompts or specifications could be improved
 
 ---
 
-## Repeating the Experiment
+## Java Lab: Calculator REST API
 
-### Full Reset
+### 1. Reset
 
-To run the lab again with the same specifications:
+```powershell
+.\scripts\reset-java.ps1 -RemoveFeatures
+```
+
+### 2. Generate
+
+Open Copilot Chat and enter:
+
+```
+Create the calculator REST API based on the requirements in docs/java-calcreqs/reqs.md.
+Follow the project guidelines in .github/copilot-instructions.md.
+```
+
+### 3. Run
 
 ```bash
-npm run reset:features
+cd java-server
+./mvnw spring-boot:run
 ```
 
-This:
+Test: http://localhost:8080/actuator/health
 
-- Removes all generated feature code
-- Restores `App.tsx` to its template state
-- Preserves all specifications and guidelines
-- Reinstalls dependencies
+### 4. Test
 
-### Varying the Experiment
+```bash
+cd java-server
+./mvnw test
+```
 
-Try modifying these inputs and observe how output quality changes:
+### 5. Evaluate
 
-| Variable             | How to Modify                          |
-| -------------------- | -------------------------------------- |
-| Specification detail | Edit `docs/calcreqs/reqs.md`           |
-| Coding standards     | Edit `.github/copilot-instructions.md` |
-| Style guide          | Edit `docs/tsstyle/*.md`               |
-| Testing requirements | Edit `docs/unit-testing.md`            |
+In Copilot Chat:
 
----
+```
+Assess the calculator REST API for best practices, adherence to our guidelines
+for style, testing and requirements. Give a grade (A, B, C, D, F).
 
-## Lab Commands Reference
-
-| Command                  | Purpose                         |
-| ------------------------ | ------------------------------- |
-| `npm run install:all`    | Install all dependencies        |
-| `npm run dev`            | Run the application             |
-| `npm test`               | Run tests                       |
-| `npm run reset`          | Reset dependencies only         |
-| `npm run reset:features` | Reset and remove generated code |
-| `npm run reset:all`      | Full reset including lock files |
+Include sections for security, input validation, maintainability.
+```
 
 ---
 
-## Key Documents
+## Commands
 
-| Document                          | Purpose                          |
-| --------------------------------- | -------------------------------- |
-| `docs/calcreqs/reqs.md`           | Calculator feature specification |
-| `docs/tsstyle/`                   | TypeScript style guide           |
-| `docs/unit-testing.md`            | Testing strategy                 |
-| `.github/copilot-instructions.md` | Project coding guidelines        |
+### TypeScript
+
+| Command                  | Description                       |
+| ------------------------ | --------------------------------- |
+| `npm run install:all`    | Install dependencies              |
+| `npm run dev`            | Start development server          |
+| `npm test`               | Run tests                         |
+| `npm run reset:features` | Remove generated code, keep specs |
+| `npm run reset:all`      | Full reset including lock files   |
+
+### Java
+
+| Command                                    | Description                 |
+| ------------------------------------------ | --------------------------- |
+| `cd java-server && ./mvnw spring-boot:run` | Start Spring Boot server    |
+| `cd java-server && ./mvnw test`            | Run tests                   |
+| `.\scripts\reset-java.ps1`                 | Clean build artifacts       |
+| `.\scripts\reset-java.ps1 -RemoveFeatures` | Remove generated code       |
 
 ---
 
-## Adding New Lab Exercises
+## Specifications
 
-To create a new feature lab:
+### TypeScript Lab
 
-1. Create a specification: `docs/<feature>reqs/reqs.md`
-2. Add to reset script in `scripts/reset-app.ps1`:
+| Document                          | Description             |
+| --------------------------------- | ----------------------- |
+| `docs/calcreqs/reqs.md`           | Calculator UI requirements |
+| `docs/tsstyle/`                   | TypeScript style guide  |
+| `docs/unit-testing.md`            | Testing guidelines      |
+
+### Java Lab
+
+| Document                          | Description             |
+| --------------------------------- | ----------------------- |
+| `docs/java-calcreqs/reqs.md`      | Calculator API requirements |
+| `docs/javastyle/`                 | Java style guide        |
+
+### Shared
+
+| Document                          | Description             |
+| --------------------------------- | ----------------------- |
+| `.github/copilot-instructions.md` | Coding standards (both) |
+
+---
+
+## Adding a New Lab
+
+### TypeScript
+
+1. Create specification: `docs/<feature>reqs/reqs.md`
+2. Register in `scripts/reset-app.ps1`:
    ```powershell
    @{
        Name = "FeatureName"
@@ -219,8 +189,32 @@ To create a new feature lab:
        GeneratedCode = @("client\src\feature")
    }
    ```
-3. Run `npm run reset:features` and generate the feature
-4. Evaluate the output
+3. Run: `npm run reset:features`
+
+### Java
+
+1. Create specification: `docs/java-<feature>reqs/reqs.md`
+2. Register in `scripts/reset-java.ps1`:
+   ```powershell
+   @{
+       Name = "FeatureName"
+       RequirementsDoc = "..\docs\java-featurereqs"
+       GeneratedCode = @(
+           "src\main\java\com\sddlabs\feature",
+           "src\test\java\com\sddlabs\feature"
+       )
+   }
+   ```
+3. Run: `.\scripts\reset-java.ps1 -RemoveFeatures`
+
+---
+
+## License
+
+MIT
+   ```bash
+   npm run reset:features
+   ```
 
 ---
 

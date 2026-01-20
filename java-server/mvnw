@@ -1,0 +1,81 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+# ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+# Apache Maven Wrapper startup script, version 3.2.0
+# ----------------------------------------------------------------------------
+
+set -euf
+
+# Project base directory
+MAVEN_PROJECTBASEDIR="${MAVEN_BASEDIR:-$(cd -- "$(dirname -- "$0")" && pwd -P)}"
+WRAPPER_PROPERTIES="$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.properties"
+
+if [ ! -f "$WRAPPER_PROPERTIES" ]; then
+  echo "Error: Maven wrapper properties not found at: $WRAPPER_PROPERTIES" >&2
+  exit 1
+fi
+
+# Read distribution URL from properties
+distributionUrl=$(grep "distributionUrl=" "$WRAPPER_PROPERTIES" | cut -d'=' -f2-)
+
+if [ -z "$distributionUrl" ]; then
+  echo "Error: distributionUrl not found in wrapper properties" >&2
+  exit 1
+fi
+
+# Maven home directory
+MAVEN_USER_HOME="${MAVEN_USER_HOME:-${HOME}/.m2}"
+WRAPPER_DIST_DIR="$MAVEN_USER_HOME/wrapper/dists"
+
+# Extract filename from URL
+fileName=$(basename "$distributionUrl" .zip)
+MAVEN_HOME="$WRAPPER_DIST_DIR/$fileName"
+
+# Download and extract Maven if not present
+if [ ! -x "$MAVEN_HOME/bin/mvn" ]; then
+  echo "Downloading Maven from: $distributionUrl"
+  
+  mkdir -p "$MAVEN_HOME"
+  
+  # Download
+  if command -v curl > /dev/null 2>&1; then
+    curl -fsSL "$distributionUrl" -o "/tmp/maven-wrapper.zip"
+  elif command -v wget > /dev/null 2>&1; then
+    wget -q "$distributionUrl" -O "/tmp/maven-wrapper.zip"
+  else
+    echo "Error: Neither curl nor wget found" >&2
+    exit 1
+  fi
+  
+  echo "Extracting Maven..."
+  unzip -q "/tmp/maven-wrapper.zip" -d "$MAVEN_HOME"
+  
+  # Move contents up if extracted to subdirectory
+  if [ -d "$MAVEN_HOME/apache-maven-"* ]; then
+    mv "$MAVEN_HOME/apache-maven-"*/* "$MAVEN_HOME/"
+    rmdir "$MAVEN_HOME/apache-maven-"*
+  fi
+  
+  rm -f "/tmp/maven-wrapper.zip"
+fi
+
+export MAVEN_HOME
+exec "$MAVEN_HOME/bin/mvn" "$@"

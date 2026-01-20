@@ -4,3 +4,19 @@ dist
 .env.local
 *.log
 .DS_Store
+
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.idea/
+*.factorypath
+.settings/
+.classpath
+.project
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
