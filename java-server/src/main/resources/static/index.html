@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDDLabs - Java Spring Boot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .app-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .app-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            min-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .loading {
+            color: #888;
+            font-style: italic;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .data {
+            text-align: left;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .data p {
+            margin: 0.5rem 0;
+        }
+
+        button {
+            border-radius: 8px;
+            border: 1px solid transparent;
+            padding: 0.6em 1.2em;
+            font-size: 1em;
+            font-weight: 500;
+            font-family: inherit;
+            background-color: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #5a6fd6;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>SDDLabs</h1>
+            <p>Java Spring Boot REST API</p>
+        </header>
+
+        <main class="app-main">
+            <div class="card">
+                <h2>API Response</h2>
+                <p id="loading" class="loading">Loading...</p>
+                <p id="error" class="error" style="display: none;"></p>
+                <div id="data" class="data" style="display: none;">
+                    <p><strong>Status:</strong> <span id="status"></span></p>
+                    <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+                </div>
+                <button id="refreshBtn" onclick="fetchData()">Refresh Data</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const dataEl = document.getElementById('data');
+            const statusEl = document.getElementById('status');
+            const timestampEl = document.getElementById('timestamp');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            dataEl.style.display = 'none';
+            refreshBtn.disabled = true;
+
+            try {
+                const response = await fetch('/actuator/health');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                const result = await response.json();
+                
+                statusEl.textContent = result.status || 'Unknown';
+                timestampEl.textContent = new Date().toISOString();
+                
+                loadingEl.style.display = 'none';
+                dataEl.style.display = 'block';
+            } catch (err) {
+                loadingEl.style.display = 'none';
+                errorEl.textContent = 'Error: ' + err.message;
+                errorEl.style.display = 'block';
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Fetch data on page load
+        fetchData();
+    </script>
+</body>
+</html>
