@@ -155,9 +155,9 @@ try {
         # Add new features here as they are created
         $featureMappings = @(
             @{
-                Name = "Calculator"
+                Name            = "Calculator"
                 RequirementsDoc = "docs\calcreqs"
-                GeneratedCode = @(
+                GeneratedCode   = @(
                     "client\src\calculator"
                 )
             }
@@ -183,7 +183,8 @@ try {
                     if (Test-Path $codePath) {
                         Write-Host "  Removing: $codePath" -ForegroundColor Gray
                         Remove-Item -Recurse -Force $codePath
-                    } else {
+                    }
+                    else {
                         Write-Host "  Not found: $codePath (already removed)" -ForegroundColor DarkGray
                     }
                 }
@@ -199,7 +200,8 @@ try {
             Write-Host "Restoring App.tsx from template..." -ForegroundColor Yellow
             Copy-Item -Path $appTemplatePath -Destination $appTsxPath -Force
             Write-Host "  App.tsx restored (feature imports/routes removed)" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host ""
             Write-Host "Warning: App.template.tsx not found." -ForegroundColor Yellow
             Write-Host "         You may need to manually update App.tsx to remove" -ForegroundColor Yellow
@@ -222,11 +224,13 @@ try {
         if ($LASTEXITCODE -eq 0) {
             Write-Host ""
             Write-Host "  Dependencies installed successfully." -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host ""
             Write-Host "  Warning: npm install completed with errors." -ForegroundColor Red
         }
-    } else {
+    }
+    else {
         Write-Host "[5/5] Skipping dependency installation (use -SkipInstall was specified)." -ForegroundColor Yellow
     }
 
@@ -240,12 +244,14 @@ try {
         Write-Host "  1. Ask Copilot to recreate features from docs/ requirements" -ForegroundColor Gray
         Write-Host "  2. Run 'npm run dev' to start development" -ForegroundColor Gray
         Write-Host "  3. Run 'cd client && npm test' to run tests" -ForegroundColor Gray
-    } else {
+    }
+    else {
         Write-Host "  1. Run 'npm run dev' to start development" -ForegroundColor Gray
         Write-Host "  2. Run 'cd client && npm test' to run tests" -ForegroundColor Gray
     }
     Write-Host ""
 
-} finally {
+}
+finally {
     Pop-Location
 }
