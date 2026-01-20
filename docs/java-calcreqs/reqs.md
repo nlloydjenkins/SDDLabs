@@ -20,6 +20,7 @@ This document defines the requirements for a REST API that performs arithmetic c
 **Endpoint:** `POST /api/calculator/calculate`
 
 **Request Body:**
+
 ```json
 {
   "firstOperand": 5.0,
@@ -29,6 +30,7 @@ This document defines the requirements for a REST API that performs arithmetic c
 ```
 
 **Response Body (Success):**
+
 ```json
 {
   "result": 8.0,
@@ -39,6 +41,7 @@ This document defines the requirements for a REST API that performs arithmetic c
 ```
 
 **Response Body (Error):**
+
 ```json
 {
   "result": 0.0,
@@ -53,6 +56,7 @@ This document defines the requirements for a REST API that performs arithmetic c
 **Endpoint:** `GET /actuator/health`
 
 **Response:**
+
 ```json
 {
   "status": "UP"
@@ -66,7 +70,7 @@ This document defines the requirements for a REST API that performs arithmetic c
 ### 3.1 Supported Operations
 
 | Operator | Operation      | Symbol |
-|----------|----------------|--------|
+| -------- | -------------- | ------ |
 | `+`      | Addition       | Plus   |
 | `-`      | Subtraction    | Minus  |
 | `*`      | Multiplication | Star   |
@@ -190,6 +194,7 @@ Test the full HTTP request/response cycle:
 ## 7. Example Requests
 
 ### Addition
+
 ```bash
 curl -X POST http://localhost:8080/api/calculator/calculate \
   -H "Content-Type: application/json" \
@@ -197,6 +202,7 @@ curl -X POST http://localhost:8080/api/calculator/calculate \
 ```
 
 ### Division by Zero
+
 ```bash
 curl -X POST http://localhost:8080/api/calculator/calculate \
   -H "Content-Type: application/json" \

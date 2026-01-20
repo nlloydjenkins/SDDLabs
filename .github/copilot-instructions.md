@@ -1,6 +1,7 @@
 # Project Instructions
 
 This repository contains multiple lab projects for Spec-Driven Development:
+
 - `/client` - React TypeScript frontend
 - `/server` - Express TypeScript API backend
 - `/java-server` - Spring Boot REST API backend
@@ -179,7 +180,7 @@ Use `@RestControllerAdvice` for global exception handling:
 ```java
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     @ExceptionHandler(ArithmeticException.class)
     public ResponseEntity<ErrorResponse> handleArithmeticException(ArithmeticException ex) {
         return ResponseEntity.badRequest()
@@ -190,11 +191,11 @@ public class GlobalExceptionHandler {
 
 ### Testing Strategy
 
-| Test Type | Framework | Purpose |
-|-----------|-----------|---------|
-| Unit Tests | JUnit 5 + Mockito | Service layer logic |
-| Integration Tests | @SpringBootTest | Full request/response |
-| Controller Tests | @WebMvcTest | HTTP layer only |
+| Test Type         | Framework         | Purpose               |
+| ----------------- | ----------------- | --------------------- |
+| Unit Tests        | JUnit 5 + Mockito | Service layer logic   |
+| Integration Tests | @SpringBootTest   | Full request/response |
+| Controller Tests  | @WebMvcTest       | HTTP layer only       |
 
 ### Test Structure (Arrange-Act-Assert)
 
@@ -203,10 +204,10 @@ public class GlobalExceptionHandler {
 void calculate_addition_returnsCorrectSum() {
     // Arrange
     var request = new CalculationRequest(5.0, 3.0, "+");
-    
+
     // Act
     var result = calculatorService.calculate(request);
-    
+
     // Assert
     assertThat(result.result()).isEqualTo(8.0);
     assertThat(result.hasError()).isFalse();
@@ -215,10 +216,10 @@ void calculate_addition_returnsCorrectSum() {
 
 ### SOLID Principles for Spring Boot
 
-| Principle | Application |
-|-----------|-------------|
-| **Single Responsibility** | One service = one domain |
-| **Open/Closed** | Extend via interfaces, not modification |
-| **Liskov Substitution** | Consistent interface implementations |
-| **Interface Segregation** | Small, focused interfaces |
-| **Dependency Inversion** | Inject interfaces, not implementations |
+| Principle                 | Application                             |
+| ------------------------- | --------------------------------------- |
+| **Single Responsibility** | One service = one domain                |
+| **Open/Closed**           | Extend via interfaces, not modification |
+| **Liskov Substitution**   | Consistent interface implementations    |
+| **Interface Segregation** | Small, focused interfaces               |
+| **Dependency Inversion**  | Inject interfaces, not implementations  |

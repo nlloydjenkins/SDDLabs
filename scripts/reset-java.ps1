@@ -97,9 +97,9 @@ try {
         # Define feature mappings
         $featureMappings = @(
             @{
-                Name = "Calculator"
+                Name            = "Calculator"
                 RequirementsDoc = "..\docs\java-calcreqs"
-                GeneratedCode = @(
+                GeneratedCode   = @(
                     "src\main\java\com\sddlabs\calculator",
                     "src\test\java\com\sddlabs\calculator"
                 )
@@ -119,7 +119,8 @@ try {
                     if (Test-Path $fullPath) {
                         Write-Host "  Removing: $codePath" -ForegroundColor Gray
                         Remove-Item -Recurse -Force $fullPath
-                    } else {
+                    }
+                    else {
                         Write-Host "  Not found: $codePath (already removed)" -ForegroundColor DarkGray
                     }
                 }
@@ -138,15 +139,18 @@ try {
         if (Test-Path "mvnw.cmd") {
             Write-Host "  Running: .\mvnw.cmd clean" -ForegroundColor Gray
             & .\mvnw.cmd clean
-        } elseif (Get-Command mvn -ErrorAction SilentlyContinue) {
+        }
+        elseif (Get-Command mvn -ErrorAction SilentlyContinue) {
             Write-Host "  Running: mvn clean" -ForegroundColor Gray
             & mvn clean
-        } else {
+        }
+        else {
             Write-Host "  Maven not found. Skipping clean step." -ForegroundColor Yellow
             Write-Host "  Install Maven or use the Maven wrapper." -ForegroundColor Yellow
         }
         Write-Host "  Done." -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "[3/3] Skipping Maven clean (-SkipBuild specified)." -ForegroundColor Yellow
     }
 
@@ -161,12 +165,14 @@ try {
         Write-Host "     'Create the calculator REST API based on docs/java-calcreqs/reqs.md'" -ForegroundColor DarkGray
         Write-Host "  2. Run: cd java-server && mvnw spring-boot:run" -ForegroundColor Gray
         Write-Host "  3. Test: curl http://localhost:8080/actuator/health" -ForegroundColor Gray
-    } else {
+    }
+    else {
         Write-Host "  1. Run: cd java-server && mvnw spring-boot:run" -ForegroundColor Gray
         Write-Host "  2. Test: curl http://localhost:8080/actuator/health" -ForegroundColor Gray
     }
     Write-Host ""
 
-} finally {
+}
+finally {
     Pop-Location
 }

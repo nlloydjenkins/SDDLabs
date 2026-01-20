@@ -7,6 +7,7 @@ Generate features from specifications using AI coding assistants.
 ## Prerequisites
 
 ### Required
+
 - Node.js 18+ (for TypeScript lab)
 - Java 17+ (for Java lab)
 - Git
@@ -23,6 +24,7 @@ vmware.vscode-boot-dev-pack
 ```
 
 ### Alternative: IntelliJ IDEA
+
 - Install [IntelliJ IDEA](https://www.jetbrains.com/idea/)
 - Install plugin: GitHub Copilot (Settings → Plugins)
 
@@ -142,12 +144,12 @@ Include sections for security, input validation, maintainability.
 
 ### Java
 
-| Command                                    | Description                 |
-| ------------------------------------------ | --------------------------- |
-| `cd java-server && ./mvnw spring-boot:run` | Start Spring Boot server    |
-| `cd java-server && ./mvnw test`            | Run tests                   |
-| `.\scripts\reset-java.ps1`                 | Clean build artifacts       |
-| `.\scripts\reset-java.ps1 -RemoveFeatures` | Remove generated code       |
+| Command                                    | Description              |
+| ------------------------------------------ | ------------------------ |
+| `cd java-server && ./mvnw spring-boot:run` | Start Spring Boot server |
+| `cd java-server && ./mvnw test`            | Run tests                |
+| `.\scripts\reset-java.ps1`                 | Clean build artifacts    |
+| `.\scripts\reset-java.ps1 -RemoveFeatures` | Remove generated code    |
 
 ---
 
@@ -155,18 +157,18 @@ Include sections for security, input validation, maintainability.
 
 ### TypeScript Lab
 
-| Document                          | Description             |
-| --------------------------------- | ----------------------- |
-| `docs/calcreqs/reqs.md`           | Calculator UI requirements |
-| `docs/tsstyle/`                   | TypeScript style guide  |
-| `docs/unit-testing.md`            | Testing guidelines      |
+| Document                | Description                |
+| ----------------------- | -------------------------- |
+| `docs/calcreqs/reqs.md` | Calculator UI requirements |
+| `docs/tsstyle/`         | TypeScript style guide     |
+| `docs/unit-testing.md`  | Testing guidelines         |
 
 ### Java Lab
 
-| Document                          | Description             |
-| --------------------------------- | ----------------------- |
-| `docs/java-calcreqs/reqs.md`      | Calculator API requirements |
-| `docs/javastyle/`                 | Java style guide        |
+| Document                     | Description                 |
+| ---------------------------- | --------------------------- |
+| `docs/java-calcreqs/reqs.md` | Calculator API requirements |
+| `docs/javastyle/`            | Java style guide            |
 
 ### Shared
 
@@ -212,9 +214,10 @@ Include sections for security, input validation, maintainability.
 ## License
 
 MIT
-   ```bash
-   npm run reset:features
-   ```
+
+```bash
+npm run reset:features
+```
 
 ---
 
