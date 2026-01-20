@@ -101,7 +101,10 @@ try {
                 RequirementsDoc = "..\docs\java-calcreqs"
                 GeneratedCode   = @(
                     "src\main\java\com\sddlabs\calculator",
-                    "src\test\java\com\sddlabs\calculator"
+                    "src\test\java\com\sddlabs\calculator",
+                    "src\main\resources\static\index.html",
+                    "src\main\resources\static\css",
+                    "src\main\resources\static\js"
                 )
             }
         )
@@ -163,12 +166,14 @@ try {
     if ($RemoveFeatures) {
         Write-Host "  1. Ask Copilot to create the calculator feature:" -ForegroundColor Gray
         Write-Host "     'Create the calculator REST API based on docs/java-calcreqs/reqs.md'" -ForegroundColor DarkGray
-        Write-Host "  2. Run: cd java-server && mvnw spring-boot:run" -ForegroundColor Gray
-        Write-Host "  3. Test: curl http://localhost:8080/actuator/health" -ForegroundColor Gray
+        Write-Host "  2. Run in a NEW terminal window:" -ForegroundColor Gray
+        Write-Host "     cd java-server; .\mvnw.ps1 spring-boot:run" -ForegroundColor DarkGray
+        Write-Host "  3. Test: http://localhost:8080/actuator/health" -ForegroundColor Gray
     }
     else {
-        Write-Host "  1. Run: cd java-server && mvnw spring-boot:run" -ForegroundColor Gray
-        Write-Host "  2. Test: curl http://localhost:8080/actuator/health" -ForegroundColor Gray
+        Write-Host "  1. Run in a NEW terminal window:" -ForegroundColor Gray
+        Write-Host "     cd java-server; .\mvnw.ps1 spring-boot:run" -ForegroundColor DarkGray
+        Write-Host "  2. Test: http://localhost:8080/actuator/health" -ForegroundColor Gray
     }
     Write-Host ""
 

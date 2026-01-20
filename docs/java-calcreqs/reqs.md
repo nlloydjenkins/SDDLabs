@@ -1,15 +1,19 @@
-# Calculator REST API — Requirements Document
+# Calculator Application — Requirements Document
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** Draft  
-**Target Platform:** Spring Boot REST API  
-**Port:** 8080
+**Target Platform:** Spring Boot (REST API + Web UI)  
+**Port:** 8080  
+**Reference UI:** iOS-style calculator (dark theme, circular buttons, right-aligned display)
 
 ---
 
 ## 1. Purpose & Scope
 
-This document defines the requirements for a REST API that performs arithmetic calculations. The API provides a stateless calculation service that can be consumed by any client (web, mobile, CLI).
+This document defines the requirements for a calculator application with both a REST API backend and a web-based frontend UI. The application provides:
+
+- A stateless REST API for arithmetic calculations
+- A web UI matching the iOS calculator design (dark theme, circular buttons)
 
 ---
 
@@ -116,9 +120,72 @@ Invalid requests should return HTTP 400 with validation error details.
 
 ---
 
-## 5. Technical Requirements
+## 5. Frontend UI Requirements
 
-### 5.1 Project Structure
+### 5.1 Visual Design
+
+- Dark-themed user interface
+- High-contrast colour palette
+- Circular buttons with consistent sizing
+- Distinct visual separation between:
+  - Numeric keys (dark grey)
+  - Operators (orange/highlight colour)
+  - Function keys (AC, %, ±) (light grey)
+- Numbers and results displayed in white on black background
+- Subtle shadows or depth effects to indicate clickable elements
+
+### 5.2 Layout
+
+- Portrait-first layout optimised for mobile and desktop
+- Right-aligned calculation display
+- Large result text, scalable for long numbers
+- Fixed grid layout for buttons (4 columns)
+- Consistent spacing and alignment across all rows
+- Responsive design that works on desktop and mobile browsers
+
+### 5.3 Calculator Controls
+
+| Button | Function       | Description                       |
+| ------ | -------------- | --------------------------------- |
+| `0-9`  | Numeric input  | Enter digits                      |
+| `.`    | Decimal point  | Add decimal to current number     |
+| `+`    | Addition       | Add two numbers                   |
+| `-`    | Subtraction    | Subtract second from first        |
+| `×`    | Multiplication | Multiply two numbers              |
+| `÷`    | Division       | Divide first by second            |
+| `=`    | Equals         | Calculate and display result      |
+| `AC`   | All Clear      | Reset calculator to initial state |
+| `±`    | Sign toggle    | Toggle positive/negative          |
+| `%`    | Percentage     | Convert to percentage             |
+
+### 5.4 Display Behaviour
+
+- Current expression shown above the main result
+- Result updates after pressing equals
+- Maximum digit length enforced with scaling
+- Error state displayed for division by zero
+- Clear feedback when input is reset
+
+### 5.5 Accessibility
+
+- All buttons have descriptive accessibility labels
+- Keyboard support for desktop users
+- Minimum touch target size of 44x44px
+- Visible focus indicators
+- High contrast ratios (WCAG 2.1 AA compliant)
+
+### 5.6 Technology Stack (Frontend)
+
+- HTML5, CSS3, JavaScript (vanilla or framework)
+- Served as static resources from Spring Boot
+- No additional build tools required
+- Responsive CSS for mobile/desktop
+
+---
+
+## 6. Technical Requirements
+
+### 6.1 Project Structure
 
 ```
 java-server/
@@ -134,6 +201,14 @@ java-server/
 │       │   └── CalculationResult.java
 │       └── exception/
 │           └── GlobalExceptionHandler.java
+├── src/main/resources/
+│   ├── application.yml
+│   └── static/
+│       ├── index.html
+│       ├── css/
+│       │   └── calculator.css
+│       └── js/
+│           └── calculator.js
 ├── src/test/java/com/sddlabs/calculator/
 │   ├── controller/
 │   │   └── CalculatorControllerTest.java
@@ -142,17 +217,18 @@ java-server/
 └── pom.xml
 ```
 
-### 5.2 Technology Stack
+### 6.2 Technology Stack
 
 - Java 17+
 - Spring Boot 3.x
-- Spring Web (REST)
+- Spring Web (REST + Static Resources)
 - Spring Validation
+- HTML5 / CSS3 / JavaScript (Frontend)
 - JUnit 5
 - AssertJ
 - Mockito
 
-### 5.3 Coding Standards
+### 6.3 Coding Standards
 
 - Follow `docs/javastyle/style-guide.md`
 - Use Java records for DTOs
@@ -161,9 +237,9 @@ java-server/
 
 ---
 
-## 6. Testing Requirements
+## 7. Testing Requirements
 
-### 6.1 Unit Tests
+### 7.1 Unit Tests
 
 Test the service layer in isolation:
 
@@ -175,7 +251,7 @@ Test the service layer in isolation:
 - Division by zero handling
 - Floating-point precision handling
 
-### 6.2 Integration Tests
+### 7.2 Integration Tests
 
 Test the full HTTP request/response cycle:
 
@@ -184,14 +260,14 @@ Test the full HTTP request/response cycle:
 - Missing fields return 400
 - Division by zero returns 200 with error in body
 
-### 6.3 Test Coverage
+### 7.3 Test Coverage
 
 - Minimum 80% coverage on service layer
 - All edge cases documented and tested
 
 ---
 
-## 7. Example Requests
+## 8. Example Requests
 
 ### Addition
 
@@ -211,7 +287,9 @@ curl -X POST http://localhost:8080/api/calculator/calculate \
 
 ---
 
-## 8. Acceptance Criteria
+## 9. Acceptance Criteria
+
+### API Acceptance Criteria
 
 - [ ] All four arithmetic operations work correctly
 - [ ] Division by zero returns error response, not exception
@@ -220,3 +298,18 @@ curl -X POST http://localhost:8080/api/calculator/calculate \
 - [ ] Unit tests pass with >80% coverage
 - [ ] Integration tests verify HTTP layer
 - [ ] Response time < 50ms
+
+### UI Acceptance Criteria
+
+- [ ] Calculator UI accessible at http://localhost:8080/
+- [ ] Dark theme with iOS-style design
+- [ ] All numeric buttons (0-9) work correctly
+- [ ] All operator buttons (+, -, ×, ÷) work correctly
+- [ ] Equals button calculates and displays result
+- [ ] AC button clears all input
+- [ ] Sign toggle (±) works correctly
+- [ ] Percentage (%) works correctly
+- [ ] Decimal point input works correctly
+- [ ] Division by zero displays error state
+- [ ] Responsive design works on mobile and desktop
+- [ ] Keyboard input supported (desktop)
