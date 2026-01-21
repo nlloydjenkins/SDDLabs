@@ -27,13 +27,9 @@ This repository contains multiple lab projects for Spec-Driven Development:
 
 ## Good Coding Practices
 
-The following principles must be adhered to when writing or modifying code in this project.
-
 ### 1. Component Decomposition
 
-- Break large components into smaller, focused units with single responsibilities
-- If a component exceeds 200-300 lines, split it into smaller components
-- Each component should have one clear purpose
+Split components over 250 lines. The threshold is a guideline—some 400-line components are fine if cohesive, some 150-line ones are already tangled. Each component should do one thing. If you're struggling to name it, it's probably doing too much.
 
 ### 2. Data-Driven Rendering
 
@@ -94,9 +90,7 @@ The following principles must be adhered to when writing or modifying code in th
 - Use `React.memo` for components that render often with same props
 - Avoid unnecessary re-renders by keeping state close to where it's used
 
-### 10. Comprehensive Testing Strategy
-
-Follow these testing approaches:
+### 10. Testing Strategy
 
 | Test Type                | Purpose                      | When to Use                         |
 | ------------------------ | ---------------------------- | ----------------------------------- |
@@ -191,11 +185,12 @@ public class GlobalExceptionHandler {
 
 ### Testing Strategy
 
-| Test Type         | Framework         | Purpose               |
-| ----------------- | ----------------- | --------------------- |
-| Unit Tests        | JUnit 5 + Mockito | Service layer logic   |
-| Integration Tests | @SpringBootTest   | Full request/response |
-| Controller Tests  | @WebMvcTest       | HTTP layer only       |
+| Test Type         | Framework         | Purpose                                        |
+| ----------------- | ----------------- | ---------------------------------------------- |
+| Unit Tests        | JUnit 5 + Mockito | Service layer logic                            |
+| Integration Tests | @SpringBootTest   | Full request/response with real Spring context |
+| Controller Tests  | @WebMvcTest       | HTTP layer only, mocked services               |
+| Property-Based    | jqwik             | Edge cases in calculations                     |
 
 ### Test Structure (Arrange-Act-Assert)
 

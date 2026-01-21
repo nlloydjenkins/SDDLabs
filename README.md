@@ -8,16 +8,16 @@ Generate features from specifications using AI coding assistants.
 
 ### Required Software
 
-| Software                                              | Version      | Purpose            |
-| ----------------------------------------------------- | ------------ | ------------------ |
-| [Node.js](https://nodejs.org/)                        | 18+          | TypeScript lab     |
-| [Java JDK](https://adoptium.net/)                     | 17+          | Java lab           |
-| [Git](https://git-scm.com/)                           | Latest       | Version control    |
-| [GitHub Copilot](https://github.com/features/copilot) | Subscription | AI code generation |
+| Software                                              | Version      | Notes                                                       |
+| ----------------------------------------------------- | ------------ | ----------------------------------------------------------- |
+| [Node.js](https://nodejs.org/)                        | 18+          |                                                             |
+| [Java JDK](https://adoptium.net/)                     | **21+**      | VS Code extension hard requirement. Project compiles on 17. |
+| [Git](https://git-scm.com/)                           | Latest       |                                                             |
+| [GitHub Copilot](https://github.com/features/copilot) | Subscription | Won't work with Free tier.                                  |
 
 ### Java Installation (Windows)
 
-1. Download [Microsoft OpenJDK 17](https://learn.microsoft.com/en-us/java/openjdk/download) or [Eclipse Temurin 17](https://adoptium.net/)
+1. Download [Microsoft OpenJDK 21](https://learn.microsoft.com/en-us/java/openjdk/download) or [Eclipse Temurin 21](https://adoptium.net/)
 2. Run the installer (ensure "Set JAVA_HOME" is checked)
 3. Verify installation:
    ```powershell
@@ -28,10 +28,10 @@ Generate features from specifications using AI coding assistants.
 
    ```powershell
    # Find your Java installation path first
-   $env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
+   $env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-21.0.5.11-hotspot"
 
    # To set permanently (run as Administrator):
-   [System.Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot", "Machine")
+   [System.Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Program Files\Microsoft\jdk-21.0.5.11-hotspot", "Machine")
    ```
 
 ### VS Code Setup
@@ -61,6 +61,33 @@ code --install-extension GitHub.copilot-chat
 code --install-extension vscjava.vscode-java-pack
 code --install-extension vmware.vscode-boot-dev-pack
 ```
+
+#### Null Analysis (Red Hat Java Extension)
+
+The workspace is configured with automatic null analysis via the Red Hat Java extension (`redhat.java`, included in the Java Extension Pack). This provides compile-time null safety warnings.
+
+**Configuration** (already set in `.vscode/settings.json`):
+
+```json
+{
+  "java.compile.nullAnalysis.mode": "automatic"
+}
+```
+
+**Modes available:**
+
+| Mode        | Description                                          |
+| ----------- | ---------------------------------------------------- |
+| `automatic` | Auto-detects nullability annotations in dependencies |
+| `enabled`   | Always enable null analysis                          |
+| `disabled`  | Disable null analysis                                |
+
+When enabled, the extension detects common null annotations (`@NonNull`, `@Nullable`) from libraries like:
+
+- `org.eclipse.jdt.annotation`
+- `javax.annotation` (JSR-305)
+- `org.jetbrains.annotations`
+- `lombok.NonNull`
 
 ### Alternative: IntelliJ IDEA
 
@@ -137,14 +164,14 @@ Ensure `JAVA_HOME` is set before running Maven commands:
 $env:JAVA_HOME
 
 # If not set, find your Java installation and set it:
-$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
-# Or wherever your Java 17+ is installed
+$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-21.0.5.11-hotspot"
+# Or wherever your Java 21+ is installed
 ```
 
 **Linux/macOS:**
 
 ```bash
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 ```
 
 ### 1. Reset
@@ -170,7 +197,7 @@ Follow the project guidelines in .github/copilot-instructions.md.
 
 ```powershell
 cd java-server
-$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
+$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-21.0.5.11-hotspot"
 .\mvnw.ps1 spring-boot:run
 ```
 
@@ -203,11 +230,58 @@ cd java-server
 In Copilot Chat:
 
 ```
-Assess the calculator REST API for best practices, adherence to our guidelines
-for style, testing and requirements. Give a grade (A, B, C, D, F).
+Assess the calculator REST API against the Spring Boot Best Practices in docs/springboot-bp.md.
+Also check adherence to our guidelines for style, testing and requirements.
+Give a grade (A, B, C, D, F).
 
-Include sections for security, input validation, maintainability.
+Include sections for:
+- REST Controller patterns (versioning, ResponseEntity, validation)
+- Dependency injection (constructor injection, interfaces)
+- Exception handling (global handler, custom exceptions)
+- Testing coverage (unit, controller, integration tests)
+- Documentation (OpenAPI/Swagger)
+- Security and input validation
+- Maintainability and SOLID principles
 ```
+
+#### Java Assessment Checklist
+
+Before submitting, verify your Java project includes:
+
+- [ ] **Controller Layer**
+  - [ ] Uses `@RestController` and `@RequestMapping`
+  - [ ] API versioned with `/api/v1/` prefix
+  - [ ] Returns `ResponseEntity<>` with explicit HTTP status codes
+  - [ ] Uses `@Valid` for request body validation
+  - [ ] No business logic in controllers
+
+- [ ] **Service Layer**
+  - [ ] Uses constructor injection (not `@Autowired` on fields)
+  - [ ] Implements service interface
+  - [ ] Contains all business logic
+
+- [ ] **DTOs**
+  - [ ] Uses Java records for request/response objects
+  - [ ] Validation annotations on request fields
+
+- [ ] **Exception Handling**
+  - [ ] `@RestControllerAdvice` global exception handler
+  - [ ] Custom exception classes for domain errors
+  - [ ] Standardised `ErrorResponse` DTO
+
+- [ ] **Testing**
+  - [ ] Unit tests for service layer with Mockito
+  - [ ] Controller tests with `@WebMvcTest`
+  - [ ] At least one integration test with `@SpringBootTest`
+  - [ ] Tests follow Arrange-Act-Assert pattern
+
+- [ ] **Documentation**
+  - [ ] `springdoc-openapi` dependency added
+  - [ ] Swagger UI accessible at `/swagger-ui.html`
+
+- [ ] **Configuration**
+  - [ ] Actuator health endpoint exposed
+  - [ ] Appropriate logging with SLF4J
 
 ### Stopping the Server
 
@@ -260,6 +334,7 @@ Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force
 | ---------------------------- | --------------------------- |
 | `docs/java-calcreqs/reqs.md` | Calculator API requirements |
 | `docs/javastyle/`            | Java style guide            |
+| `docs/springboot-bp.md`      | Spring Boot best practices  |
 
 ### Shared
 
@@ -304,12 +379,23 @@ Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force
 
 ## Troubleshooting
 
+### Java 21 required for VS Code extension
+
+If you see "Java 21 or more recent is required to run the Java extension":
+
+1. Download [Microsoft OpenJDK 21](https://learn.microsoft.com/en-us/java/openjdk/download) or [Eclipse Temurin 21](https://adoptium.net/)
+2. Install and set `JAVA_HOME`:
+   ```powershell
+   $env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-21.0.5.11-hotspot"
+   ```
+3. Restart VS Code
+
 ### JAVA_HOME not set
 
 If you get errors about `JAVA_HOME`, set it before running Maven:
 
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
+$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-21.0.5.11-hotspot"
 ```
 
 ### Port already in use
@@ -319,6 +405,15 @@ If port 8080 is in use, stop the existing Java process:
 ```powershell
 Get-Process -Name java | Stop-Process -Force
 ```
+
+### Maven works but VS Code shows red squiggles everywhere
+
+The Red Hat Java extension sometimes loses track of the project after code generation.
+
+1. `Ctrl+Shift+P` → "Java: Clean Java Language Server Workspace"
+2. Restart VS Code
+
+Still broken? Delete `.project` and `.classpath` in `java-server/`, then restart. The extension regenerates them. Yes, you have to restart VS Code again.
 
 ### Server blocking terminal
 
