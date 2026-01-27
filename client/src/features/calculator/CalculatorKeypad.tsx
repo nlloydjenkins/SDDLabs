@@ -1,7 +1,7 @@
-import type { CalculatorKeypadProps, Operator } from './types';
-import { BUTTON_CONFIGS } from './constants';
-import { CalculatorButton } from './CalculatorButton';
-import styles from './Calculator.module.css';
+import type { CalculatorKeypadProps, Operator } from "./types";
+import { BUTTON_CONFIGS } from "./constants";
+import { CalculatorButton } from "./CalculatorButton";
+import styles from "./Calculator.module.css";
 
 /**
  * Calculator keypad component.
@@ -19,26 +19,26 @@ export function CalculatorKeypad({
 }: CalculatorKeypadProps) {
   const handleButtonClick = (config: (typeof BUTTON_CONFIGS)[number]) => {
     switch (config.type) {
-      case 'digit':
-        if (config.value === '.') {
+      case "digit":
+        if (config.value === ".") {
           onDecimal();
         } else {
           onDigit(config.value);
         }
         break;
-      case 'operator':
+      case "operator":
         onOperator(config.value as Operator);
         break;
-      case 'function':
-        if (config.value === 'clear') {
+      case "function":
+        if (config.value === "clear") {
           onClear();
-        } else if (config.value === 'toggleSign') {
+        } else if (config.value === "toggleSign") {
           onToggleSign();
-        } else if (config.value === 'percent') {
+        } else if (config.value === "percent") {
           onPercent();
         }
         break;
-      case 'equals':
+      case "equals":
         onEquals();
         break;
     }
@@ -51,7 +51,9 @@ export function CalculatorKeypad({
           key={config.label}
           config={config}
           onClick={() => handleButtonClick(config)}
-          isActive={config.type === 'operator' && config.value === activeOperator}
+          isActive={
+            config.type === "operator" && config.value === activeOperator
+          }
         />
       ))}
     </div>

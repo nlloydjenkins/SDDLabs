@@ -1,5 +1,5 @@
-import type { CalculatorButtonProps } from './types';
-import styles from './Calculator.module.css';
+import type { CalculatorButtonProps } from "./types";
+import styles from "./Calculator.module.css";
 
 /**
  * Individual calculator button component.
@@ -14,11 +14,11 @@ export function CalculatorButton({
   const buttonClasses = [
     styles.button,
     styles[config.type],
-    config.span === 2 ? styles.wide : '',
-    isActive ? styles.active : '',
+    config.span === 2 ? styles.wide : "",
+    isActive ? styles.active : "",
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <button
@@ -27,8 +27,8 @@ export function CalculatorButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={config.ariaLabel}
-      aria-pressed={isActive ? 'true' : undefined}
-      style={config.span === 2 ? { gridColumn: 'span 2' } : undefined}
+      aria-pressed={isActive ? "true" : undefined}
+      style={config.span === 2 ? { gridColumn: "span 2" } : undefined}
     >
       {config.label}
     </button>

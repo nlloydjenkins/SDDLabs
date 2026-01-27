@@ -1,10 +1,10 @@
-import { useEffect, useCallback } from 'react';
-import { useCalculator } from './useCalculator';
-import { CalculatorDisplay } from './CalculatorDisplay';
-import { CalculatorKeypad } from './CalculatorKeypad';
-import { KEY_TO_OPERATOR } from './constants';
-import type { Operator } from './types';
-import styles from './Calculator.module.css';
+import { useEffect, useCallback } from "react";
+import { useCalculator } from "./useCalculator";
+import { CalculatorDisplay } from "./CalculatorDisplay";
+import { CalculatorKeypad } from "./CalculatorKeypad";
+import { KEY_TO_OPERATOR } from "./constants";
+import type { Operator } from "./types";
+import styles from "./Calculator.module.css";
 
 /**
  * Main Calculator component.
@@ -26,14 +26,14 @@ export function Calculator() {
   } = useCalculator();
 
   // Extract the active operator from expression for button highlighting
-  const activeOperator = expression.endsWith('+')
-    ? '+'
-    : expression.endsWith('−')
-      ? '-'
-      : expression.endsWith('×')
-        ? '×'
-        : expression.endsWith('÷')
-          ? '÷'
+  const activeOperator = expression.endsWith("+")
+    ? "+"
+    : expression.endsWith("−")
+      ? "-"
+      : expression.endsWith("×")
+        ? "×"
+        : expression.endsWith("÷")
+          ? "÷"
           : null;
 
   const handleKeyDown = useCallback(
@@ -42,7 +42,7 @@ export function Calculator() {
       const key = event.key;
 
       // Digits 0-9
-      if (key >= '0' && key <= '9') {
+      if (key >= "0" && key <= "9") {
         event.preventDefault();
         handleDigit(key);
         return;
@@ -57,35 +57,35 @@ export function Calculator() {
       }
 
       // Equals
-      if (key === 'Enter' || key === '=') {
+      if (key === "Enter" || key === "=") {
         event.preventDefault();
         handleEquals();
         return;
       }
 
       // Clear
-      if (key === 'Escape' || key === 'Delete') {
+      if (key === "Escape" || key === "Delete") {
         event.preventDefault();
         handleClear();
         return;
       }
 
       // Backspace
-      if (key === 'Backspace') {
+      if (key === "Backspace") {
         event.preventDefault();
         handleBackspace();
         return;
       }
 
       // Decimal
-      if (key === '.') {
+      if (key === ".") {
         event.preventDefault();
         handleDecimal();
         return;
       }
 
       // Percent
-      if (key === '%') {
+      if (key === "%") {
         event.preventDefault();
         handlePercent();
         return;
@@ -99,12 +99,12 @@ export function Calculator() {
       handleBackspace,
       handleDecimal,
       handlePercent,
-    ]
+    ],
   );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   return (
@@ -114,7 +114,11 @@ export function Calculator() {
       aria-label="Calculator"
       tabIndex={0}
     >
-      <CalculatorDisplay value={display} expression={expression} error={error} />
+      <CalculatorDisplay
+        value={display}
+        expression={expression}
+        error={error}
+      />
       <CalculatorKeypad
         onDigit={handleDigit}
         onOperator={handleOperator}
