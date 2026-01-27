@@ -1,29 +1,72 @@
-# Calculator Application — Requirements Document
+# Calculator REST API — Java/Spring Boot Requirements
 
-**Version:** 1.1  
-**Status:** Draft  
-**Target Platform:** Spring Boot (REST API + Web UI)  
-**Port:** 8080  
-**Reference UI:** iOS-style calculator (dark theme, circular buttons, right-aligned display)
-
----
-
-## 1. Purpose & Scope
-
-This document defines the requirements for a calculator application with both a REST API backend and a web-based frontend UI. The application provides:
-
-- A stateless REST API for arithmetic calculations
-- A web UI matching the iOS calculator design (dark theme, circular buttons)
+**Version:** 2.0  
+**Status:** Active  
+**Framework:** Spring Boot 3.x  
+**Java Version:** 17+  
+**Port:** 8080
 
 ---
 
-## 2. API Endpoints
+## 1. Scope
 
-### 2.1 Calculate
+This document defines **Java/Spring Boot-specific** technical requirements.
+
+**For functional requirements, see:** [../calculator-requirements.md](../calculator-requirements.md)
+
+- Arithmetic operations and behaviour
+- Edge cases and error messages
+- Accessibility (WCAG 2.1 AAA) for embedded UI
+- Security and performance targets
+
+---
+
+## 2. Project Structure
+
+```
+java-server/
+├── src/main/java/com/sddlabs/
+│   ├── Application.java
+│   └── calculator/
+│       ├── controller/
+│       │   └── CalculatorController.java
+│       ├── service/
+│       │   ├── CalculatorService.java          # Interface
+│       │   └── CalculatorServiceImpl.java      # Implementation
+│       ├── model/
+│       │   ├── CalculationRequest.java         # Request DTO (record)
+│       │   ├── CalculationResult.java          # Response DTO (record)
+│       │   └── ErrorResponse.java              # Error DTO (record)
+│       └── exception/
+│           ├── CalculationException.java       # Domain exception
+│           └── GlobalExceptionHandler.java     # @RestControllerAdvice
+├── src/main/resources/
+│   ├── application.yml
+│   └── static/
+│       ├── index.html
+│       ├── css/
+│       │   └── calculator.css
+│       └── js/
+│           └── calculator.js
+├── src/test/java/com/sddlabs/calculator/
+│   ├── controller/
+│   │   └── CalculatorControllerTest.java       # @WebMvcTest
+│   ├── service/
+│   │   └── CalculatorServiceTest.java          # Unit tests
+│   └── integration/
+│       └── CalculatorIntegrationTest.java      # @SpringBootTest
+└── pom.xml
+```
+
+---
+
+## 3. API Contract
+
+### 3.1 Calculate Endpoint
 
 **Endpoint:** `POST /api/calculator/calculate`
 
-**Request Body:**
+**Request:**
 
 ```json
 {
@@ -33,7 +76,7 @@ This document defines the requirements for a calculator application with both a 
 }
 ```
 
-**Response Body (Success):**
+**Success Response (HTTP 200):**
 
 ```json
 {
@@ -44,18 +87,27 @@ This document defines the requirements for a calculator application with both a 
 }
 ```
 
-**Response Body (Error):**
+**Calculation Error Response (HTTP 200):**
 
 ```json
 {
   "result": 0.0,
   "expression": "5.0 / 0.0",
   "hasError": true,
-  "errorMessage": "Division by zero"
+  "errorMessage": "Cannot divide by zero"
 }
 ```
 
-### 2.2 Health Check
+**Validation Error Response (HTTP 400):**
+
+```json
+{
+  "error": "Validation failed",
+  "details": [{ "field": "operator", "message": "Invalid operator: ^" }]
+}
+```
+
+### 3.2 Health Endpoint
 
 **Endpoint:** `GET /actuator/health`
 
@@ -69,247 +121,382 @@ This document defines the requirements for a calculator application with both a 
 
 ---
 
-## 3. Functional Requirements
+## 4. DTOs (Java Records)
 
-### 3.1 Supported Operations
+### 4.1 Request Record
 
-| Operator | Operation      | Symbol |
-| -------- | -------------- | ------ |
-| `+`      | Addition       | Plus   |
-| `-`      | Subtraction    | Minus  |
-| `*`      | Multiplication | Star   |
-| `/`      | Division       | Slash  |
+```java
+public record CalculationRequest(
+    @NotNull(message = "firstOperand is required")
+    Double firstOperand,
 
-### 3.2 Calculation Behaviour
+    @NotNull(message = "secondOperand is required")
+    Double secondOperand,
 
-- All operations use double-precision floating-point arithmetic
-- Division by zero returns an error response (not an exception)
-- Results should handle floating-point precision (e.g., `0.1 + 0.2 = 0.3`, not `0.30000000000000004`)
-- Very large or small numbers should use scientific notation when appropriate
-
-### 3.3 Input Validation
-
-- `firstOperand` - Required, must be a valid number
-- `secondOperand` - Required, must be a valid number
-- `operator` - Required, must be one of: `+`, `-`, `*`, `/`
-
-Invalid requests should return HTTP 400 with validation error details.
-
----
-
-## 4. Non-Functional Requirements
-
-### 4.1 Performance
-
-- Response time < 50ms for calculation requests
-- No external dependencies for core calculation
-- Stateless design for horizontal scalability
-
-### 4.2 Security
-
-- Input validation on all request parameters
-- No arbitrary code execution
-- No sensitive data logging
-- CORS configuration for web clients (configurable)
-
-### 4.3 Reliability
-
-- Graceful error handling (no stack traces in responses)
-- Consistent error response format
-- Application health endpoint for monitoring
-
----
-
-## 5. Frontend UI Requirements
-
-### 5.1 Visual Design
-
-- Dark-themed user interface
-- High-contrast colour palette
-- Circular buttons with consistent sizing
-- Distinct visual separation between:
-  - Numeric keys (dark grey)
-  - Operators (orange/highlight colour)
-  - Function keys (AC, %, ±) (light grey)
-- Numbers and results displayed in white on black background
-- Subtle shadows or depth effects to indicate clickable elements
-
-### 5.2 Layout
-
-- Portrait-first layout optimised for mobile and desktop
-- Right-aligned calculation display
-- Large result text, scalable for long numbers
-- Fixed grid layout for buttons (4 columns)
-- Consistent spacing and alignment across all rows
-- Responsive design that works on desktop and mobile browsers
-
-### 5.3 Calculator Controls
-
-| Button | Function       | Description                       |
-| ------ | -------------- | --------------------------------- |
-| `0-9`  | Numeric input  | Enter digits                      |
-| `.`    | Decimal point  | Add decimal to current number     |
-| `+`    | Addition       | Add two numbers                   |
-| `-`    | Subtraction    | Subtract second from first        |
-| `×`    | Multiplication | Multiply two numbers              |
-| `÷`    | Division       | Divide first by second            |
-| `=`    | Equals         | Calculate and display result      |
-| `AC`   | All Clear      | Reset calculator to initial state |
-| `±`    | Sign toggle    | Toggle positive/negative          |
-| `%`    | Percentage     | Convert to percentage             |
-
-### 5.4 Display Behaviour
-
-- Current expression shown above the main result
-- Result updates after pressing equals
-- Maximum digit length enforced with scaling
-- Error state displayed for division by zero
-- Clear feedback when input is reset
-
-### 5.5 Accessibility
-
-- All buttons have descriptive accessibility labels
-- Keyboard support for desktop users
-- Minimum touch target size of 44x44px
-- Visible focus indicators
-- High contrast ratios (WCAG 2.1 AA compliant)
-
-### 5.6 Technology Stack (Frontend)
-
-- HTML5, CSS3, JavaScript (vanilla or framework)
-- Served as static resources from Spring Boot
-- No additional build tools required
-- Responsive CSS for mobile/desktop
-
----
-
-## 6. Technical Requirements
-
-### 6.1 Project Structure
-
-```
-java-server/
-├── src/main/java/com/sddlabs/
-│   ├── Application.java
-│   └── calculator/
-│       ├── controller/
-│       │   └── CalculatorController.java
-│       ├── service/
-│       │   └── CalculatorService.java
-│       ├── model/
-│       │   ├── CalculationRequest.java
-│       │   └── CalculationResult.java
-│       └── exception/
-│           └── GlobalExceptionHandler.java
-├── src/main/resources/
-│   ├── application.yml
-│   └── static/
-│       ├── index.html
-│       ├── css/
-│       │   └── calculator.css
-│       └── js/
-│           └── calculator.js
-├── src/test/java/com/sddlabs/calculator/
-│   ├── controller/
-│   │   └── CalculatorControllerTest.java
-│   └── service/
-│       └── CalculatorServiceTest.java
-└── pom.xml
+    @NotBlank(message = "operator is required")
+    @Pattern(regexp = "[+\\-*/]", message = "Invalid operator: ${validatedValue}")
+    String operator
+) {}
 ```
 
-### 6.2 Technology Stack
+### 4.2 Response Record
 
-- Java 17+
-- Spring Boot 3.x
-- Spring Web (REST + Static Resources)
-- Spring Validation
-- HTML5 / CSS3 / JavaScript (Frontend)
-- JUnit 5
-- AssertJ
-- Mockito
+```java
+public record CalculationResult(
+    double result,
+    String expression,
+    boolean hasError,
+    String errorMessage
+) {
+    public static CalculationResult success(double result, String expression) {
+        return new CalculationResult(result, expression, false, null);
+    }
 
-### 6.3 Coding Standards
+    public static CalculationResult error(String expression, String errorMessage) {
+        return new CalculationResult(0.0, expression, true, errorMessage);
+    }
+}
+```
 
-- Follow `docs/javastyle/style-guide.md`
-- Use Java records for DTOs
-- Constructor injection for dependencies
-- Comprehensive Javadoc on public APIs
+### 4.3 Error Response Record
 
----
-
-## 7. Testing Requirements
-
-### 7.1 Unit Tests
-
-Test the service layer in isolation:
-
-- Addition of positive numbers
-- Addition of negative numbers
-- Subtraction operations
-- Multiplication operations
-- Division operations
-- Division by zero handling
-- Floating-point precision handling
-
-### 7.2 Integration Tests
-
-Test the full HTTP request/response cycle:
-
-- Valid calculation requests return 200
-- Invalid operator returns 400
-- Missing fields return 400
-- Division by zero returns 200 with error in body
-
-### 7.3 Test Coverage
-
-- Minimum 80% coverage on service layer
-- All edge cases documented and tested
+```java
+public record ErrorResponse(
+    String error,
+    List<FieldError> details
+) {
+    public record FieldError(String field, String message) {}
+}
+```
 
 ---
 
-## 8. Example Requests
+## 5. Controller Pattern
 
-### Addition
+```java
+@RestController
+@RequestMapping("/api/calculator")
+public class CalculatorController {
+
+    private final CalculatorService calculatorService;
+
+    // Constructor injection (no @Autowired)
+    public CalculatorController(CalculatorService calculatorService) {
+        this.calculatorService = calculatorService;
+    }
+
+    @PostMapping("/calculate")
+    public ResponseEntity<CalculationResult> calculate(
+            @Valid @RequestBody CalculationRequest request) {
+        CalculationResult result = calculatorService.calculate(request);
+        return ResponseEntity.ok(result);
+    }
+}
+```
+
+---
+
+## 6. Service Pattern
+
+### 6.1 Interface
+
+```java
+public interface CalculatorService {
+    CalculationResult calculate(CalculationRequest request);
+}
+```
+
+### 6.2 Implementation
+
+```java
+@Service
+public class CalculatorServiceImpl implements CalculatorService {
+
+    @Override
+    public CalculationResult calculate(CalculationRequest request) {
+        double a = request.firstOperand();
+        double b = request.secondOperand();
+        String op = request.operator();
+        String expression = formatExpression(a, b, op);
+
+        return switch (op) {
+            case "+" -> CalculationResult.success(a + b, expression);
+            case "-" -> CalculationResult.success(a - b, expression);
+            case "*" -> CalculationResult.success(a * b, expression);
+            case "/" -> {
+                if (b == 0) {
+                    yield CalculationResult.error(expression, "Cannot divide by zero");
+                }
+                yield CalculationResult.success(a / b, expression);
+            }
+            default -> CalculationResult.error(expression, "Invalid operator: " + op);
+        };
+    }
+
+    private String formatExpression(double a, double b, String op) {
+        return String.format("%.1f %s %.1f", a, op, b);
+    }
+}
+```
+
+---
+
+## 7. Exception Handling
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(
+            MethodArgumentNotValidException ex) {
+
+        List<ErrorResponse.FieldError> details = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(e -> new ErrorResponse.FieldError(e.getField(), e.getDefaultMessage()))
+            .toList();
+
+        return ResponseEntity.badRequest()
+            .body(new ErrorResponse("Validation failed", details));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleParseException(
+            HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest()
+            .body(new ErrorResponse("Invalid JSON", List.of()));
+    }
+}
+```
+
+---
+
+## 8. Configuration
+
+### 8.1 application.yml
+
+```yaml
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sddlabs-calculator
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+```
+
+### 8.2 CORS Configuration (Optional)
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+            .allowedOrigins("http://localhost:3000", "http://localhost:5173")
+            .allowedMethods("GET", "POST");
+    }
+}
+```
+
+---
+
+## 9. Testing Requirements
+
+### 9.1 Unit Tests (Service Layer)
+
+```java
+class CalculatorServiceTest {
+
+    private CalculatorService service = new CalculatorServiceImpl();
+
+    @Test
+    void calculate_addition_returnsCorrectSum() {
+        // Arrange
+        var request = new CalculationRequest(5.0, 3.0, "+");
+
+        // Act
+        var result = service.calculate(request);
+
+        // Assert
+        assertThat(result.result()).isEqualTo(8.0);
+        assertThat(result.hasError()).isFalse();
+    }
+
+    @Test
+    void calculate_divisionByZero_returnsError() {
+        var request = new CalculationRequest(5.0, 0.0, "/");
+
+        var result = service.calculate(request);
+
+        assertThat(result.hasError()).isTrue();
+        assertThat(result.errorMessage()).isEqualTo("Cannot divide by zero");
+    }
+
+    @Test
+    void calculate_floatingPointPrecision_handledCorrectly() {
+        var request = new CalculationRequest(0.1, 0.2, "+");
+
+        var result = service.calculate(request);
+
+        assertThat(result.result()).isEqualTo(0.3);
+    }
+}
+```
+
+### 9.2 Controller Tests (@WebMvcTest)
+
+```java
+@WebMvcTest(CalculatorController.class)
+class CalculatorControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private CalculatorService calculatorService;
+
+    @Test
+    void calculate_validRequest_returns200() throws Exception {
+        when(calculatorService.calculate(any()))
+            .thenReturn(CalculationResult.success(8.0, "5.0 + 3.0"));
+
+        mockMvc.perform(post("/api/calculator/calculate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"firstOperand": 5.0, "secondOperand": 3.0, "operator": "+"}
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value(8.0))
+            .andExpect(jsonPath("$.hasError").value(false));
+    }
+
+    @Test
+    void calculate_missingOperator_returns400() throws Exception {
+        mockMvc.perform(post("/api/calculator/calculate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"firstOperand": 5.0, "secondOperand": 3.0}
+                    """))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.error").value("Validation failed"));
+    }
+}
+```
+
+### 9.3 Integration Tests (@SpringBootTest)
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class CalculatorIntegrationTest {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Test
+    void calculate_fullStack_returnsCorrectResult() {
+        var request = new CalculationRequest(10.0, 5.0, "-");
+
+        var response = restTemplate.postForEntity(
+            "/api/calculator/calculate",
+            request,
+            CalculationResult.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().result()).isEqualTo(5.0);
+    }
+}
+```
+
+### 9.4 Coverage Target
+
+- Service layer: ≥ 90%
+- Controller layer: ≥ 80%
+- All edge cases from shared requirements tested
+
+---
+
+## 10. Static Frontend
+
+### 10.1 Location
+
+Serve from `src/main/resources/static/`:
+
+- `index.html` — Calculator UI
+- `css/calculator.css` — Styles
+- `js/calculator.js` — Frontend logic
+
+### 10.2 Technology
+
+- Vanilla HTML5, CSS3, JavaScript
+- No build tools required
+- Fetches from `/api/calculator/calculate`
+
+### 10.3 Accessibility
+
+See [../accessibility.md](../accessibility.md) for full requirements.
+
+- All buttons have `aria-label`
+- Results announced via `aria-live="polite"`
+- Errors announced via `aria-live="assertive"`
+- Keyboard navigation supported
+
+---
+
+## 11. Example curl Commands
 
 ```bash
+# Addition
 curl -X POST http://localhost:8080/api/calculator/calculate \
   -H "Content-Type: application/json" \
   -d '{"firstOperand": 5, "secondOperand": 3, "operator": "+"}'
-```
 
-### Division by Zero
-
-```bash
+# Division by zero
 curl -X POST http://localhost:8080/api/calculator/calculate \
   -H "Content-Type: application/json" \
   -d '{"firstOperand": 5, "secondOperand": 0, "operator": "/"}'
+
+# Invalid operator (returns 400)
+curl -X POST http://localhost:8080/api/calculator/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"firstOperand": 5, "secondOperand": 3, "operator": "^"}'
 ```
 
 ---
 
-## 9. Acceptance Criteria
+## 12. Acceptance Criteria
 
-### API Acceptance Criteria
+### Technical
 
-- [ ] All four arithmetic operations work correctly
-- [ ] Division by zero returns error response, not exception
-- [ ] Invalid requests return 400 with details
-- [ ] Health endpoint returns UP
-- [ ] Unit tests pass with >80% coverage
-- [ ] Integration tests verify HTTP layer
-- [ ] Response time < 50ms
+- [ ] Uses Java records for all DTOs
+- [ ] Constructor injection (no field `@Autowired`)
+- [ ] Service layer behind interface
+- [ ] Global exception handler with `@RestControllerAdvice`
+- [ ] Validation annotations on request DTOs
+- [ ] Returns `ResponseEntity<>` from controller
 
-### UI Acceptance Criteria
+### Testing
 
-- [ ] Calculator UI accessible at http://localhost:8080/
-- [ ] Dark theme with iOS-style design
-- [ ] All numeric buttons (0-9) work correctly
-- [ ] All operator buttons (+, -, ×, ÷) work correctly
-- [ ] Equals button calculates and displays result
-- [ ] AC button clears all input
-- [ ] Sign toggle (±) works correctly
-- [ ] Percentage (%) works correctly
-- [ ] Decimal point input works correctly
-- [ ] Division by zero displays error state
-- [ ] Responsive design works on mobile and desktop
-- [ ] Keyboard input supported (desktop)
+- [ ] Unit tests for service layer
+- [ ] Controller tests with `@WebMvcTest`
+- [ ] At least one `@SpringBootTest` integration test
+- [ ] All edge cases from shared requirements tested
+- [ ] Tests follow Arrange-Act-Assert pattern
+
+### Code Quality
+
+- [ ] Follows `docs/javastyle/style-guide.md`
+- [ ] Javadoc on public API methods
+- [ ] No warnings from compiler
+- [ ] Static UI accessible at http://localhost:8080/

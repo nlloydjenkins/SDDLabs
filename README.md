@@ -143,11 +143,11 @@ npm test
 In Copilot Chat:
 
 ```
-Assess the calculator page for best practices, adherence to our guidelines
-for style, testing and requirements. Give a grade (A, B, C, D, F).
-
-Include sections for security, accessibility, maintainability.
+Evaluate this calculator implementation against the criteria in docs/grading.md.
+Provide a grade (A, B, C, D, F) with detailed justification for each category.
 ```
+
+See [docs/grading.md](docs/grading.md) for detailed scoring criteria.
 
 ---
 
@@ -230,19 +230,12 @@ cd java-server
 In Copilot Chat:
 
 ```
-Assess the calculator REST API against the Spring Boot Best Practices in docs/springboot-bp.md.
-Also check adherence to our guidelines for style, testing and requirements.
-Give a grade (A, B, C, D, F).
-
-Include sections for:
-- REST Controller patterns (versioning, ResponseEntity, validation)
-- Dependency injection (constructor injection, interfaces)
-- Exception handling (global handler, custom exceptions)
-- Testing coverage (unit, controller, integration tests)
-- Documentation (OpenAPI/Swagger)
-- Security and input validation
-- Maintainability and SOLID principles
+Evaluate this calculator implementation against the criteria in docs/grading.md.
+Provide a grade (A, B, C, D, F) with detailed justification for each category.
+Also check adherence to Spring Boot best practices in docs/springboot-bp.md.
 ```
+
+See [docs/grading.md](docs/grading.md) for detailed scoring criteria.
 
 #### Java Assessment Checklist
 
@@ -320,27 +313,30 @@ Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force
 
 ## Specifications
 
+### Shared (Both Labs)
+
+| Document                          | Description                             |
+| --------------------------------- | --------------------------------------- |
+| `docs/calculator-requirements.md` | Shared functional requirements          |
+| `docs/accessibility.md`           | WCAG 2.1 AAA compliance requirements    |
+| `docs/grading.md`                 | Evaluation criteria for implementations |
+| `.github/copilot-instructions.md` | Coding standards for all labs           |
+
 ### TypeScript Lab
 
-| Document                | Description                |
-| ----------------------- | -------------------------- |
-| `docs/calcreqs/reqs.md` | Calculator UI requirements |
-| `docs/tsstyle/`         | TypeScript style guide     |
-| `docs/unit-testing.md`  | Testing guidelines         |
+| Document                | Description                    |
+| ----------------------- | ------------------------------ |
+| `docs/calcreqs/reqs.md` | React/TypeScript-specific reqs |
+| `docs/tsstyle/`         | TypeScript style guide         |
+| `docs/unit-testing.md`  | Testing guidelines             |
 
 ### Java Lab
 
-| Document                     | Description                 |
-| ---------------------------- | --------------------------- |
-| `docs/java-calcreqs/reqs.md` | Calculator API requirements |
-| `docs/javastyle/`            | Java style guide            |
-| `docs/springboot-bp.md`      | Spring Boot best practices  |
-
-### Shared
-
-| Document                          | Description             |
-| --------------------------------- | ----------------------- |
-| `.github/copilot-instructions.md` | Coding standards (both) |
+| Document                     | Description                |
+| ---------------------------- | -------------------------- |
+| `docs/java-calcreqs/reqs.md` | Spring Boot-specific reqs  |
+| `docs/javastyle/`            | Java style guide           |
+| `docs/springboot-bp.md`      | Spring Boot best practices |
 
 ---
 

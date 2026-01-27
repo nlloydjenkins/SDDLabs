@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import "./App.css";
+import { Calculator } from "./features/calculator";
 
 interface ApiResponse {
   message: string;
@@ -44,6 +45,7 @@ function App() {
       <main className="app-main">
         <Routes>
           {/* Feature routes will be added here */}
+          <Route path="/calculator" element={<Calculator />} />
           <Route
             path="/"
             element={

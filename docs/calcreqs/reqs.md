@@ -1,231 +1,374 @@
-# Calculator Application — Requirements Document
+# Calculator UI — React/TypeScript Requirements
 
-**Version:** 1.1  
-**Status:** Draft  
-**Target Platforms:** Mobile (iOS primary), Web (responsive)  
-**Reference UI:** iOS-style calculator (dark theme, circular buttons, right-aligned display)  
+**Version:** 2.0  
+**Status:** Active  
+**Framework:** React 18+ with TypeScript  
+**Build Tool:** Vite  
+**Testing:** Vitest + React Testing Library  
 **Reference Screenshot:** [`calculator.png`](./calculator.png)
 
 ![iOS Calculator Reference](./calculator.png)
 
 ---
 
-## 1. Purpose & Scope
+## 1. Scope
 
-The purpose of this document is to define the functional, non-functional, and design requirements for a basic arithmetic calculator application. The calculator is intended to provide fast, reliable, and accessible calculation of common arithmetic expressions for everyday use.
+This document defines **React/TypeScript-specific** technical requirements.
 
-This document covers:
+**For functional requirements, see:** [../calculator-requirements.md](../calculator-requirements.md)
 
-- Visual and interaction design
-- Core calculation logic
-- Accessibility and usability
-- Security and data handling
-- Performance and quality attributes
-
----
-
-## 2. Design Requirements
-
-### 2.1 Visual Design
-
-- Dark-themed user interface by default
-- High-contrast colour palette
-- Circular buttons with consistent sizing
-- Distinct visual separation between:
-  - Numeric keys
-  - Operators
-  - Function keys (AC, %, ±)
-- Operators displayed in a highlight colour (e.g. orange)
-- Numbers and results displayed in white on black background
-- Subtle shadows or depth effects to indicate tappable elements
-
-### 2.2 Layout
-
-- Portrait-first layout optimised for one-handed use
-- Right-aligned calculation display
-- Large result text, scalable for long numbers
-- Fixed grid layout for buttons (4 columns)
-- Consistent spacing and alignment across all rows
-- Safe-area awareness for modern devices (notch, home indicator)
-
-### 2.3 Responsiveness
-
-- Adaptive scaling for:
-  - Different screen sizes
-  - Accessibility text scaling
-- No horizontal scrolling
-- Buttons remain reachable without stretching on mobile devices
+- Arithmetic operations and behaviour
+- Edge cases and error messages
+- Accessibility (WCAG 2.1 AAA)
+- Security and performance targets
 
 ---
 
-## 3. Functional Requirements
+## 2. Project Structure
 
-### 3.1 Core Arithmetic
-
-The calculator must support:
-
-- Addition (+)
-- Subtraction (−)
-- Multiplication (×)
-- Division (÷)
-- Equals (=)
-
-### 3.2 Input Handling
-
-- Numeric input (0–9)
-- Decimal point input
-- Clear all (AC)
-- Sign toggle (±)
-- Percentage (%)
-
-### 3.3 Calculation Behaviour
-
-- Immediate execution model (standard calculator behaviour)
-- Operator chaining supported (e.g. `2 + 3 × 4`)
-- Division by zero handled gracefully
-- Percentage behaves relative to the current value
-- Sign toggle applies to the current operand
-- Decimal precision handled consistently (no floating-point artefacts visible)
-
-### 3.4 Display Behaviour
-
-- Current expression shown subtly above the main result (e.g. `8×2` displayed above `16`)
-- Result updates in real time where applicable
-- Maximum digit length enforced with intelligent scaling
-- Scientific notation used only when necessary
-- Clear feedback when input is reset or invalid
-
-### 3.5 Error Handling
-
-- Division by zero displays an error state
-- Overflow conditions handled gracefully
-- Error state cleared by pressing AC
-- Calculator never crashes due to malformed input
+```
+client/src/
+├── features/
+│   └── calculator/
+│       ├── Calculator.tsx           # Main component
+│       ├── Calculator.module.css    # Scoped styles
+│       ├── CalculatorDisplay.tsx    # Display component
+│       ├── CalculatorButton.tsx     # Button component
+│       ├── CalculatorKeypad.tsx     # Button grid component
+│       ├── useCalculator.ts         # State and logic hook
+│       ├── calculatorEngine.ts      # Pure calculation functions
+│       ├── constants.ts             # Button configs, limits
+│       └── types.ts                 # TypeScript interfaces
+├── App.tsx
+└── main.tsx
+```
 
 ---
 
-## 4. Accessibility Requirements
+## 3. Component Architecture
 
-### 4.1 WCAG Compliance
+### 3.1 Component Breakdown
 
-- Target compliance: WCAG 2.1 AA
-- Minimum contrast ratio of 4.5:1 for text and controls
-- Colour is not the sole indicator of meaning
+| Component           | Responsibility                             |
+| ------------------- | ------------------------------------------ |
+| `Calculator`        | Container, layout, keyboard event handling |
+| `CalculatorDisplay` | Shows expression and result                |
+| `CalculatorButton`  | Individual button with aria-label          |
+| `CalculatorKeypad`  | Grid layout, button rendering from config  |
 
-### 4.2 Screen Reader Support
+### 3.2 Custom Hook
 
-- All buttons have descriptive accessibility labels
-  - Example: “Add”, “Equals”, “Clear”
-- Current value announced when updated
-- Error states announced clearly
+`useCalculator` manages all state and exposes:
 
-### 4.3 Input Accessibility
+```typescript
+interface UseCalculatorReturn {
+  display: string;
+  expression: string;
+  error: string | null;
+  handleDigit: (digit: string) => void;
+  handleOperator: (operator: Operator) => void;
+  handleEquals: () => void;
+  handleClear: () => void;
+  handleToggleSign: () => void;
+  handlePercent: () => void;
+  handleDecimal: () => void;
+}
+```
 
-- Fully operable via:
-  - Touch
-  - Keyboard (web)
-  - Assistive technologies
-- Logical focus order
-- Visible focus indicators
+### 3.3 Pure Calculation Engine
 
-### 4.4 Motor & Cognitive Accessibility
+`calculatorEngine.ts` contains pure functions with no side effects:
 
-- Large touch targets (minimum 44x44px)
-- No time-based interactions
-- Predictable, consistent behaviour
-- No hidden gestures required
+```typescript
+export function calculate(
+  a: number,
+  b: number,
+  operator: Operator,
+): CalculationResult;
 
----
+export function formatDisplay(value: number): string;
 
-## 5. Security Requirements
-
-### 5.1 Data Handling
-
-- No personal data collected or stored
-- No analytics by default
-- No network calls required for core functionality
-
-### 5.2 Input Safety
-
-- Input sanitisation to prevent crashes or injection-style attacks (web)
-- Calculation engine isolated from UI layer
-- No arbitrary code execution
-
-### 5.3 Platform Security
-
-- Adheres to platform sandboxing rules
-- No access to device sensors or user data
-- Minimal permissions footprint
+export function parseInput(input: string): number;
+```
 
 ---
 
-## 6. Performance Requirements
+## 4. TypeScript Requirements
 
-- Instant response to button presses (<50ms perceived latency)
-- Calculations performed synchronously on-device
-- No noticeable lag when entering long numbers
-- Low memory footprint
-- Battery-efficient (no background activity)
+### 4.1 Strict Mode
+
+Enable in `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true
+  }
+}
+```
+
+### 4.2 Type Definitions
+
+```typescript
+// types.ts
+export type Operator = "+" | "-" | "×" | "÷";
+
+export type CalculatorState = {
+  currentValue: string;
+  previousValue: string | null;
+  operator: Operator | null;
+  waitingForOperand: boolean;
+  expression: string;
+  error: string | null;
+};
+
+export type CalculationResult = {
+  value: number;
+  error: string | null;
+};
+
+export type ButtonConfig = {
+  label: string;
+  ariaLabel: string;
+  type: "digit" | "operator" | "function" | "equals";
+  value: string;
+  span?: number; // For wide buttons like "0"
+};
+```
+
+### 4.3 Props Interfaces
+
+```typescript
+interface CalculatorButtonProps {
+  config: ButtonConfig;
+  onClick: () => void;
+  isActive?: boolean;
+  disabled?: boolean;
+}
+
+interface CalculatorDisplayProps {
+  value: string;
+  expression: string;
+  error: string | null;
+}
+```
 
 ---
 
-## 7. Reliability & Quality
+## 5. Styling Requirements
 
-- Deterministic calculation results
-- Consistent behaviour across platforms
-- Comprehensive unit tests for calculation logic
-- Edge cases covered:
-  - Large numbers
-  - Repeated operators
-  - Decimal precision
+### 5.1 CSS Modules
 
----
+Use CSS Modules for scoped styling:
 
-## 8. Internationalisation & Localisation
+```typescript
+import styles from './Calculator.module.css';
 
-- Support for different decimal separators (e.g. `.` vs `,`)
-- Localised accessibility labels
-- RTL layout support where applicable
-- Numeric formatting based on locale
+<div className={styles.calculator}>
+```
 
----
+### 5.2 CSS Custom Properties
 
-## 9. Maintainability & Extensibility
+Define theme in root:
 
-- Separation of concerns:
-  - UI
-  - Calculation engine
-  - State management
-- Calculation logic implemented as a reusable module
-- Clear interfaces for adding future features:
-  - Memory keys (M+, M−, MR)
-  - Scientific functions
-  - History view
+```css
+:root {
+  --calc-bg: #000000;
+  --calc-display-text: #ffffff;
+  --calc-button-digit: #333333;
+  --calc-button-operator: #ff9500;
+  --calc-button-function: #a5a5a5;
+  --calc-button-text: #ffffff;
+  --calc-focus-ring: #4a90d9;
+}
+```
 
----
+### 5.3 Responsive Design
 
-## 10. Non-Goals (Out of Scope)
+```css
+/* Mobile-first, scales up */
+.calculator {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 9 / 16;
+}
 
-- Scientific calculator functions
-- Graphing
-- Cloud sync
-- User accounts
-- Advertising or monetisation
-
-### 10.1 Deferred Features
-
-The following features are visible in the iOS reference design but explicitly deferred for future implementation:
-
-- **Calculator mode toggle button** — Bottom-left icon for switching calculator modes (basic/scientific)
-- **History/menu button** — Top-left icon for viewing calculation history
-- **Calculation history view** — List of previous calculations
+@media (min-width: 768px) {
+  .calculator {
+    max-width: 320px;
+  }
+}
+```
 
 ---
 
-## 11. Acceptance Criteria
+## 6. State Management
 
-- All arithmetic operations function correctly
-- Calculator usable with screen readers
-- No crashes under normal or edge-case usage
-- Visual design matches reference style
-- Meets accessibility and performance targets
+### 6.1 Local State Only
+
+Use `useState` and `useReducer` — no external state library required.
+
+### 6.2 Reducer Pattern (Recommended)
+
+```typescript
+type CalculatorAction =
+  | { type: "DIGIT"; payload: string }
+  | { type: "OPERATOR"; payload: Operator }
+  | { type: "EQUALS" }
+  | { type: "CLEAR" }
+  | { type: "TOGGLE_SIGN" }
+  | { type: "PERCENT" }
+  | { type: "DECIMAL" };
+
+function calculatorReducer(
+  state: CalculatorState,
+  action: CalculatorAction,
+): CalculatorState;
+```
+
+---
+
+## 7. Testing Requirements
+
+### 7.1 Test Structure
+
+```
+client/tests/
+├── features/
+│   └── calculator/
+│       ├── Calculator.test.tsx      # Integration tests
+│       ├── calculatorEngine.test.ts # Unit tests
+│       └── useCalculator.test.ts    # Hook tests
+└── setup.ts
+```
+
+### 7.2 Unit Tests (calculatorEngine)
+
+Test pure functions in isolation:
+
+```typescript
+describe("calculate", () => {
+  it("adds two positive numbers", () => {
+    expect(calculate(5, 3, "+")).toEqual({ value: 8, error: null });
+  });
+
+  it("returns error for division by zero", () => {
+    expect(calculate(5, 0, "÷")).toEqual({
+      value: 0,
+      error: "Cannot divide by zero",
+    });
+  });
+
+  it("handles floating-point precision", () => {
+    expect(calculate(0.1, 0.2, "+")).toEqual({ value: 0.3, error: null });
+  });
+});
+```
+
+### 7.3 Integration Tests (Calculator)
+
+Test user interactions:
+
+```typescript
+describe('Calculator', () => {
+  it('calculates 5 + 3 = 8', async () => {
+    render(<Calculator />);
+    await userEvent.click(screen.getByLabelText('5'));
+    await userEvent.click(screen.getByLabelText('Add'));
+    await userEvent.click(screen.getByLabelText('3'));
+    await userEvent.click(screen.getByLabelText('Equals'));
+    expect(screen.getByRole('status')).toHaveTextContent('8');
+  });
+
+  it('shows error for division by zero', async () => {
+    render(<Calculator />);
+    await userEvent.click(screen.getByLabelText('5'));
+    await userEvent.click(screen.getByLabelText('Divide'));
+    await userEvent.click(screen.getByLabelText('0'));
+    await userEvent.click(screen.getByLabelText('Equals'));
+    expect(screen.getByRole('alert')).toHaveTextContent('Cannot divide by zero');
+  });
+});
+```
+
+### 7.4 Accessibility Tests
+
+```typescript
+import { axe, toHaveNoViolations } from 'jest-axe';
+
+it('has no accessibility violations', async () => {
+  const { container } = render(<Calculator />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
+### 7.5 Coverage Target
+
+- `calculatorEngine.ts`: 100%
+- `useCalculator.ts`: ≥ 90%
+- Components: ≥ 80%
+
+---
+
+## 8. Keyboard Support
+
+Handle in `Calculator.tsx`:
+
+```typescript
+useEffect(
+  () => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key >= "0" && e.key <= "9") handleDigit(e.key);
+      else if (e.key === "+") handleOperator("+");
+      else if (e.key === "-") handleOperator("-");
+      else if (e.key === "*") handleOperator("×");
+      else if (e.key === "/") handleOperator("÷");
+      else if (e.key === "Enter" || e.key === "=") handleEquals();
+      else if (e.key === "Escape" || e.key === "Delete") handleClear();
+      else if (e.key === "Backspace") handleBackspace();
+      else if (e.key === ".") handleDecimal();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  },
+  [
+    /* dependencies */
+  ],
+);
+```
+
+---
+
+## 9. Route Configuration
+
+Add to `App.tsx`:
+
+```typescript
+<Routes>
+  <Route path="/calculator" element={<Calculator />} />
+</Routes>
+```
+
+---
+
+## 10. Acceptance Criteria
+
+### Technical
+
+- [ ] TypeScript strict mode enabled, no `any` types
+- [ ] All components use CSS Modules
+- [ ] Calculation logic separated into pure functions
+- [ ] Custom hook manages all state
+- [ ] Keyboard navigation works
+- [ ] Tests pass with required coverage
+
+### Code Quality
+
+- [ ] Follows `docs/tsstyle/` style guide
+- [ ] No ESLint errors or warnings
+- [ ] Components under 250 lines
+- [ ] Props interfaces defined for all components

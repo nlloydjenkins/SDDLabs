@@ -1,0 +1,235 @@
+/* Calculator CSS Module */
+/* Based on iOS Calculator design with WCAG 2.1 AAA compliance */
+
+/* CSS Custom Properties (Theme) */
+.calculator {
+  --calc-bg: #000000;
+  --calc-display-text: #ffffff;
+  --calc-button-digit: #333333;
+  --calc-button-digit-hover: #444444;
+  --calc-button-operator: #ff9500;
+  --calc-button-operator-hover: #ffaa33;
+  --calc-button-operator-active: #ffffff;
+  --calc-button-function: #a5a5a5;
+  --calc-button-function-hover: #b8b8b8;
+  --calc-button-text: #ffffff;
+  --calc-button-text-dark: #000000;
+  --calc-focus-ring: #4a90d9;
+  --calc-error-text: #ff6b6b;
+  --calc-expression-text: #888888;
+
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: var(--calc-bg);
+  border-radius: 16px;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  aspect-ratio: 9 / 14;
+}
+
+.calculator:focus {
+  outline: 3px solid var(--calc-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Display area */
+.display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 16px;
+  min-height: 120px;
+  flex-shrink: 0;
+}
+
+.expression {
+  color: var(--calc-expression-text);
+  font-size: 1.25rem;
+  min-height: 1.5rem;
+  text-align: right;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value {
+  color: var(--calc-display-text);
+  font-size: 4rem;
+  font-weight: 300;
+  text-align: right;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.errorValue {
+  color: var(--calc-error-text);
+}
+
+.error {
+  color: var(--calc-error-text);
+  font-size: 0.875rem;
+  min-height: 1.25rem;
+  text-align: right;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Keypad grid */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  flex: 1;
+  padding: 8px 0;
+}
+
+/* Base button styles */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Focus visible for keyboard navigation */
+.button:focus-visible {
+  outline: 3px solid var(--calc-focus-ring);
+  outline-offset: 2px;
+}
+
+.button:active {
+  transform: scale(0.95);
+}
+
+/* Digit buttons (grey) */
+.digit {
+  background-color: var(--calc-button-digit);
+  color: var(--calc-button-text);
+}
+
+.digit:hover {
+  background-color: var(--calc-button-digit-hover);
+}
+
+/* Operator buttons (orange) */
+.operator {
+  background-color: var(--calc-button-operator);
+  color: var(--calc-button-text);
+}
+
+.operator:hover {
+  background-color: var(--calc-button-operator-hover);
+}
+
+.operator.active {
+  background-color: var(--calc-button-operator-active);
+  color: var(--calc-button-operator);
+}
+
+/* Function buttons (light grey) */
+.function {
+  background-color: var(--calc-button-function);
+  color: var(--calc-button-text-dark);
+}
+
+.function:hover {
+  background-color: var(--calc-button-function-hover);
+}
+
+/* Equals button (orange) */
+.equals {
+  background-color: var(--calc-button-operator);
+  color: var(--calc-button-text);
+}
+
+.equals:hover {
+  background-color: var(--calc-button-operator-hover);
+}
+
+/* Wide button (0 key) */
+.wide {
+  border-radius: 100px;
+  aspect-ratio: auto;
+  padding: 0 24px;
+  justify-content: flex-start;
+}
+
+/* Disabled state */
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .calculator {
+    max-width: 320px;
+  }
+
+  .value {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .value {
+    font-size: 2.5rem;
+  }
+
+  .button {
+    font-size: 1.5rem;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .button:active {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .button {
+    border: 2px solid currentColor;
+  }
+
+  .digit {
+    background-color: #000000;
+    border-color: #ffffff;
+  }
+
+  .operator,
+  .equals {
+    background-color: #ff9500;
+    border-color: #ffffff;
+  }
+
+  .function {
+    background-color: #ffffff;
+    border-color: #000000;
+  }
+}
